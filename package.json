@@ -28,13 +28,15 @@
     "test:e2e:ui": "playwright test --ui",
     "e2e:backend": "cd apps/backend && RAILS_ENV=test bin/rails db:prepare && RAILS_ENV=test PORT=3001 bin/rails server -e test",
     "setup": "npm install && npm run setup:backend",
-    "setup:backend": "cd apps/backend && bin/setup --skip-server"
+    "setup:backend": "cd apps/backend && bin/setup --skip-server",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "concurrently": "^9.1.0"
+    "concurrently": "^9.1.0",
+    "husky": "^9.1.7"
   },
   "engines": {
     "node": ">=20"

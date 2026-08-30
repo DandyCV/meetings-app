@@ -13,3 +13,7 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Local scratch screenshots
+/screenshots/
+!/screenshots/.gitkeep
