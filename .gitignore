@@ -1,0 +1,9 @@
+# Root-level ignores for the monorepo.
+# Each app also keeps its own .gitignore (apps/frontend, apps/backend)
+# for stack-specific patterns.
+
+node_modules/
+.DS_Store
+*.log
+.env
+.env.local
