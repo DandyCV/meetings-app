@@ -1,7 +1,16 @@
 # CLAUDE.md — backend
 
-Rails 8.1 API-only, Ruby 4.0, SQLite, RSpec. JWT auth. See the repo-root `CLAUDE.md` for
+Rails 8.1 API-only, Ruby 4.0, PostgreSQL 17, RSpec. JWT auth. See the repo-root `CLAUDE.md` for
 monorepo layout and cross-cutting project rules.
+
+## Database
+
+PostgreSQL. Run `docker compose up -d` (from repo root) for a local server matching the
+`config/database.yml` defaults — host `localhost:5432`, user/password `meetings_app`,
+databases `meetings_app_development` / `meetings_app_test` (the test DB is auto-created by
+Rails). Connection settings are overridable via `DATABASE_HOST` / `DATABASE_PORT` /
+`DATABASE_USERNAME` / `DATABASE_PASSWORD`; production reads `DATABASE_URL`. CI runs against a
+`postgres:17` service container.
 
 ## Commands (run from repo root unless noted)
 

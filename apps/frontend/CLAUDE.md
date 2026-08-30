@@ -12,12 +12,12 @@ repo-root `CLAUDE.md` for monorepo layout and cross-cutting project rules.
 
 ## Commands (run from repo root)
 
-| Task | Command |
-|---|---|
-| Dev | `npm run dev` (frontend :3000, backend :3001) |
-| Build | `npm run build` |
-| Lint | `npm run lint:frontend` (ESLint) |
-| E2E tests | `npm run test:e2e` |
+| Task      | Command                                       |
+| --------- | --------------------------------------------- |
+| Dev       | `npm run dev` (frontend :3000, backend :3001) |
+| Build     | `npm run build`                               |
+| Lint      | `npm run lint:frontend` (ESLint)              |
+| E2E tests | `npm run test:e2e`                            |
 
 ## Architecture
 

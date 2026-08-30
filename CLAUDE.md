@@ -6,7 +6,7 @@ Monorepo: Next.js frontend + Rails API backend. Meetings app with JWT auth.
 
 ```
 apps/frontend/   Next.js 16, App Router, TS, HeroUI v3, Tailwind v4   (npm workspace "frontend")
-apps/backend/    Rails 8.1 API-only, Ruby 4.0, SQLite, RSpec
+apps/backend/    Rails 8.1 API-only, Ruby 4.0, PostgreSQL 17, RSpec
 apps/backend/engines/{cqrs,auth,users}   backend modules as path-gems
 e2e/             Playwright end-to-end tests (repo root)
 ```
@@ -22,6 +22,7 @@ e2e/             Playwright end-to-end tests (repo root)
 
 | Task | Command |
 |---|---|
+| Database (local) | `docker compose up -d` — PostgreSQL 17 on :5432 (user/pass/db `meetings_app`) |
 | Dev (both apps) | `npm run dev` — frontend :3000, backend :3001 |
 | Backend tests | `npm test` (= `cd apps/backend && bin/rspec`) |
 | E2E tests | `npm run test:e2e` (first run: `npx playwright install chromium`) |
@@ -50,6 +51,9 @@ UI is HeroUI v3 only. See `apps/frontend/CLAUDE.md`.
 - E2E: `e2e/auth.spec.ts` (register/login/logout/guards). Playwright boots Rails in `test`
   env on :3001 and Next dev on :3000 automatically; each test uses a random
   `e2e-…@example.com` account (no seeding). See memory `e2e-auth-tests`.
+- CI: `.github/workflows/ci.yml` runs on every PR to `main` and every push to `main` — parallel `backend`
+  (`bin/ci`), `frontend` (lint + format:check + build), and `e2e` jobs, each against a
+  `postgres:17` service container.
 
 ## Project rules
 
