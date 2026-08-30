@@ -10,7 +10,7 @@ Rails.application.routes.draw do
       resource :registrations, only: :create
       resource :sessions, only: :create
       resource :current_user, only: :show, path: "me", controller: "current_user"
-      resources :meetings, only: :index
+      resources :meetings, only: [ :index, :show, :create ]
     end
   end
 end

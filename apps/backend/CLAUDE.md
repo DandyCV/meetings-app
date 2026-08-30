@@ -26,7 +26,9 @@ After changing anything under `engines/`, run `cd apps/backend && bundle install
 ## Architecture
 
 API-only Rails. Routes: `POST /api/v1/registrations`, `POST /api/v1/sessions`, `GET /api/v1/me`,
-`GET /api/v1/meetings`. Auth = JWT bearer token (HS256, `secret_key_base`, 24h exp, payload
+`GET /api/v1/meetings`, `GET /api/v1/meetings/:id`, `POST /api/v1/meetings` (meeting routes
+scoped to `current_user`; unknown/other-user meeting ids → 404). Auth = JWT bearer token
+(HS256, `secret_key_base`, 24h exp, payload
 `{ user_id }`).
 
 ### Module split (CQRS boundary) — see memory `backend-cqrs-engine-split`

@@ -28,7 +28,11 @@ repo-root `CLAUDE.md` for monorepo layout and cross-cutting project rules.
   (`.status`, `.message`, `.errors`). Base URL from `NEXT_PUBLIC_API_URL`
   (default `http://localhost:3001/api/v1`, see `.env.local`).
 - Pages: `/login`, `/register` (HeroUI `Form`/`TextField`), `/` (protected — redirects to `/login`
-  when no user; lists meetings).
+  when no user; lists meetings, links to each and to `/meetings/new`), `/meetings/new` (protected —
+  create form, HeroUI `Form`/`TextField`/`TextArea`), `/meetings/[id]` (protected — meeting detail,
+  `useParams`; 404 → "not found" message).
+- `src/lib/meetings.ts` — `Meeting` type, `fetchMeetings` / `fetchMeeting` / `createMeeting`,
+  `formatMeetingDate`.
 - UI: HeroUI v3 components only (`@heroui/react`), Tailwind v4 utility classes, `next-themes` for
   light/dark.
 
@@ -36,6 +40,10 @@ repo-root `CLAUDE.md` for monorepo layout and cross-cutting project rules.
 
 - New/changed user-facing behavior → an E2E spec in `e2e/` (repo root). Run `npm run test:e2e`
   before reporting done. See memory `testing-discipline`.
+- **UI/UX review is a completion gate.** Any UI change (new or modified) is not done until you
+  have (1) checked it visually — boot the app, screenshot the affected page(s) in the relevant
+  states/breakpoints — and (2) run it through the `ui-ux-pro-max` skill and fixed what it flags.
+  See memory `ui-review-after-ui-changes`.
 - `@types/react` / `@types/react-dom` must stay in the ROOT `package.json` devDependencies
   (npm-workspace hoisting — see memory `npm-workspaces-types-react-hoisting`).
 - Screenshots: after any user-facing change, capture the affected page(s) with `/run` or

@@ -27,22 +27,31 @@ e2e/             Playwright end-to-end tests (repo root)
 | Backend tests | `npm test` (= `cd apps/backend && bin/rspec`) |
 | E2E tests | `npm run test:e2e` (first run: `npx playwright install chromium`) |
 | Lint | `npm run lint` / `npm run lint:fix` (ESLint + RuboCop) |
+| Typecheck | `npm run typecheck` (frontend `tsc --noEmit`) |
 | Format | `npm run format` (Prettier + `rubocop -A`) |
 | Build | `npm run build` |
 
 App-specific commands (console, migrate, per-suite runs) live in each app's `CLAUDE.md`.
 
+**Before starting a server for FE/BE validation, check whether it is already running** — probe
+`http://localhost:3000` (frontend) / `http://localhost:3001/up` (backend) and reuse a live one
+instead of launching a duplicate (which will fail on the busy port). `npm run test:e2e` already
+reuses running servers locally.
+
 ## Backend at a glance
 
 API-only Rails. Routes: `POST /api/v1/registrations`, `POST /api/v1/sessions`, `GET /api/v1/me`,
-`GET /api/v1/meetings`. Auth = JWT bearer token (HS256, `secret_key_base`, 24h exp, payload
+`GET /api/v1/meetings`, `GET /api/v1/meetings/:id`, `POST /api/v1/meetings` (all meeting routes
+scoped to `current_user`). Auth = JWT bearer token (HS256, `secret_key_base`, 24h exp, payload
 `{ user_id }`). Business logic lives in three path-gem engines (`cqrs`, `auth`, `users`) —
 see `apps/backend/CLAUDE.md` and memory `backend-cqrs-engine-split`.
 
 ## Frontend at a glance
 
-App Router pages `/login`, `/register`, `/` (protected). `useAuth()` from
-`src/context/AuthContext.tsx`, `apiFetch` from `src/lib/api.ts`, JWT in `localStorage`.
+App Router pages `/login`, `/register`, `/` (protected — lists meetings), `/meetings/new`
+(protected — create form), `/meetings/[id]` (protected — meeting detail). `useAuth()` from
+`src/context/AuthContext.tsx`, `apiFetch` from `src/lib/api.ts`, meeting helpers in
+`src/lib/meetings.ts`, JWT in `localStorage`.
 UI is HeroUI v3 only. See `apps/frontend/CLAUDE.md`.
 
 ## Testing

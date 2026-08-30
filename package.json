@@ -13,6 +13,7 @@
     "lint": "npm run lint:frontend && npm run lint:backend",
     "lint:frontend": "npm run lint --workspace frontend",
     "lint:backend": "cd apps/backend && bin/rubocop",
+    "typecheck": "npm run typecheck --workspace frontend",
     "lint:fix": "npm run lint:fix:frontend && npm run lint:fix:backend",
     "lint:fix:frontend": "npm run lint:fix --workspace frontend",
     "lint:fix:backend": "cd apps/backend && bin/rubocop -A",
