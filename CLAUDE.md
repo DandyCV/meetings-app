@@ -64,6 +64,24 @@ UI is HeroUI v3 only. See `apps/frontend/CLAUDE.md`.
   (`bin/ci`), `frontend` (lint + format:check + build), and `e2e` jobs, each against a
   `postgres:17` service container.
 
+## Agent skills
+
+### Issue tracker
+
+Generated specs live as local markdown under `doc/specs/<feature-slug>/spec.md` — the
+`/to-spec` skill writes there, not to GitHub Issues. Every spec must include
+**Technical Constraints**, a **Testing Decisions → Process: TDD** clause
+(red-green-refactor), and a numbered **Acceptance Criteria** checklist. See
+`docs/agents/issue-tracker.md`.
+
+### Implementation plans
+
+Plans live as local markdown under `doc/plans/<feature-slug>.md`. Every plan is split
+into independent **phases** — each a self-contained, independently testable unit with an
+explicit Definition-of-Done checklist, delegable to a single subagent. `/plan-to-github`
+turns a plan into GitHub milestones (per phase) + issues (per task). See
+`docs/agents/plans.md`.
+
 ## Project rules
 
 - **Tests after every code change.** Run the relevant suite after each change and before
