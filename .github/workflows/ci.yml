@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DATABASE_HOST: localhost
+  DATABASE_USERNAME: meetings_app
+  DATABASE_PASSWORD: meetings_app
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: meetings_app
+          POSTGRES_PASSWORD: meetings_app
+          POSTGRES_DB: meetings_app_development
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U meetings_app"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          working-directory: apps/backend
+          bundler-cache: true
+      - name: Run backend CI (rubocop, audit, brakeman, rspec, seeds)
+        working-directory: apps/backend
+        run: bin/ci
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint --workspace frontend
+      - run: npm run format:check --workspace frontend
+      - run: npm run build --workspace frontend
+
+  e2e:
+    name: E2E
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: meetings_app
+          POSTGRES_PASSWORD: meetings_app
+          POSTGRES_DB: meetings_app_development
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U meetings_app"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: ruby/setup-ruby@v1
+        with:
+          working-directory: apps/backend
+          bundler-cache: true
+      - run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      - name: Run E2E tests
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
