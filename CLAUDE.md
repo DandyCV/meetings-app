@@ -27,6 +27,7 @@ e2e/             Playwright end-to-end tests (repo root)
 | Backend tests | `npm test` (= `cd apps/backend && bin/rspec`) |
 | E2E tests | `npm run test:e2e` (first run: `npx playwright install chromium`) |
 | Lint | `npm run lint` / `npm run lint:fix` (ESLint + RuboCop) |
+| Typecheck | `npm run typecheck` (frontend `tsc --noEmit`) |
 | Format | `npm run format` (Prettier + `rubocop -A`) |
 | Build | `npm run build` |
 
