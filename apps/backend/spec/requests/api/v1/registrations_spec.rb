@@ -8,7 +8,7 @@ RSpec.describe "Api::V1::Registrations", type: :request do
           user: { email: "jane@example.com", password: "password123",
                   password_confirmation: "password123" }
         }
-      }.to change(User, :count).by(1)
+      }.to change(Users::User, :count).by(1)
 
       expect(response).to have_http_status(:created)
       body = response.parsed_body
@@ -27,8 +27,8 @@ RSpec.describe "Api::V1::Registrations", type: :request do
     end
 
     it "rejects a duplicate email" do
-      User.create!(email: "jane@example.com", password: "password123",
-                   password_confirmation: "password123")
+      Users::User.create!(email: "jane@example.com", password: "password123",
+                          password_confirmation: "password123")
 
       post "/api/v1/registrations", params: {
         user: { email: "jane@example.com", password: "password123",

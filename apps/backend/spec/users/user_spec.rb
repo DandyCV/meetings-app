@@ -1,8 +1,8 @@
 require "rails_helper"
 
-RSpec.describe User, type: :model do
+RSpec.describe Users::User, type: :model do
   def build_user(**attrs)
-    User.new({ email: "jane@example.com", password: "password123",
+    described_class.new({ email: "jane@example.com", password: "password123",
                password_confirmation: "password123" }.merge(attrs))
   end
 

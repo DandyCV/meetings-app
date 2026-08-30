@@ -2,13 +2,13 @@ require "rails_helper"
 
 RSpec.describe "Api::V1::CurrentUser", type: :request do
   let(:user) do
-    User.create!(email: "jane@example.com", password: "password123",
-                 password_confirmation: "password123")
+    Users::User.create!(email: "jane@example.com", password: "password123",
+                        password_confirmation: "password123")
   end
 
   describe "GET /api/v1/me" do
     it "returns the current user for a valid token" do
-      token = JsonWebToken.encode({ user_id: user.id })
+      token = Auth::GenerateToken.call(user_id: user.id)
 
       get "/api/v1/me", headers: { "Authorization" => "Bearer #{token}" }
 
@@ -29,7 +29,7 @@ RSpec.describe "Api::V1::CurrentUser", type: :request do
     end
 
     it "rejects an expired token" do
-      token = JsonWebToken.encode({ user_id: user.id }, exp: 1.hour.ago)
+      token = Auth::GenerateToken.call(user_id: user.id, expires_at: 1.hour.ago)
 
       get "/api/v1/me", headers: { "Authorization" => "Bearer #{token}" }
 

@@ -3,13 +3,18 @@ module Api
     class RegistrationsController < ApplicationController
       # POST /api/v1/registrations
       def create
-        user = User.new(registration_params)
+        result = Users::RegisterUser.call(
+          email: registration_params[:email],
+          password: registration_params[:password],
+          password_confirmation: registration_params[:password_confirmation]
+        )
 
-        if user.save
-          render json: { token: JsonWebToken.encode({ user_id: user.id }), user: user_json(user) },
+        if result.success?
+          user = result.value
+          render json: { token: Auth::GenerateToken.call(user_id: user.id), user: user_json(user) },
                  status: :created
         else
-          render json: { errors: user.errors.full_messages }, status: :unprocessable_content
+          render json: { errors: result.errors }, status: :unprocessable_content
         end
       end
 

@@ -55,6 +55,18 @@ npm run test:backend    # same, explicit
 
 Backend tests live under `apps/backend/spec` (model specs and API request specs).
 
+### End-to-end (Playwright)
+
+```bash
+npm run test:e2e        # full-stack browser tests (registration, login, logout)
+npm run test:e2e:ui     # same, in Playwright's interactive UI mode
+```
+
+E2E specs live under `e2e/` and exercise the real UI against a live stack.
+Playwright boots the Rails API in the `test` environment on port 3001 and the
+Next.js dev server on port 3000 automatically (existing servers are reused
+locally). First run only: `npx playwright install chromium`.
+
 ## Linting and formatting
 
 ```bash

@@ -2,8 +2,8 @@ require "rails_helper"
 
 RSpec.describe "Api::V1::Sessions", type: :request do
   let!(:user) do
-    User.create!(email: "jane@example.com", password: "password123",
-                 password_confirmation: "password123")
+    Users::User.create!(email: "jane@example.com", password: "password123",
+                        password_confirmation: "password123")
   end
 
   describe "POST /api/v1/sessions" do

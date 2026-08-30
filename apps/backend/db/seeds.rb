@@ -2,7 +2,7 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
-user = User.find_or_create_by!(email: "demo@example.com") do |u|
+user = Users::User.find_or_create_by!(email: "demo@example.com") do |u|
   u.password = "password123"
   u.password_confirmation = "password123"
 end

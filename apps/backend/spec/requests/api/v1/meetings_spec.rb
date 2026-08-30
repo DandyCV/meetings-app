@@ -2,14 +2,14 @@ require "rails_helper"
 
 RSpec.describe "Api::V1::Meetings", type: :request do
   let(:user) do
-    User.create!(email: "jane@example.com", password: "password123",
-                 password_confirmation: "password123")
+    Users::User.create!(email: "jane@example.com", password: "password123",
+                        password_confirmation: "password123")
   end
   let(:other_user) do
-    User.create!(email: "john@example.com", password: "password123",
-                 password_confirmation: "password123")
+    Users::User.create!(email: "john@example.com", password: "password123",
+                        password_confirmation: "password123")
   end
-  let(:token) { JsonWebToken.encode({ user_id: user.id }) }
+  let(:token) { Auth::GenerateToken.call(user_id: user.id) }
   let(:auth_headers) { { "Authorization" => "Bearer #{token}" } }
 
   describe "GET /api/v1/meetings" do

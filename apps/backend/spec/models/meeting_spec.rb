@@ -2,8 +2,8 @@ require "rails_helper"
 
 RSpec.describe Meeting, type: :model do
   let(:user) do
-    User.create!(email: "jane@example.com", password: "password123",
-                 password_confirmation: "password123")
+    Users::User.create!(email: "jane@example.com", password: "password123",
+                        password_confirmation: "password123")
   end
 
   def build_meeting(**attrs)
