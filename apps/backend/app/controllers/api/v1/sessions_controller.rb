@@ -3,10 +3,10 @@ module Api
     class SessionsController < ApplicationController
       # POST /api/v1/sessions
       def create
-        user = User.find_by(email: params[:email].to_s.strip.downcase)
+        user = Users::AuthenticateUser.call(email: params[:email], password: params[:password])
 
-        if user&.authenticate(params[:password].to_s)
-          render json: { token: JsonWebToken.encode({ user_id: user.id }), user: user_json(user) },
+        if user
+          render json: { token: Auth::GenerateToken.call(user_id: user.id), user: user_json(user) },
                  status: :ok
         else
           render json: { error: "Invalid email or password" }, status: :unauthorized

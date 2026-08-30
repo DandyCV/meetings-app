@@ -7,21 +7,16 @@ class ApplicationController < ActionController::API
     render_unauthorized and return unless current_user
   end
 
+  # Composes the Auth and Users modules: Auth resolves the user id from the
+  # bearer token, Users turns that id into a record.
   def current_user
-    @current_user ||= user_from_token
+    @current_user ||= begin
+      user_id = Auth::VerifyToken.call(token: bearer_token)
+      user_id && Users::FindUser.call(id: user_id)
+    end
   end
 
   private
-
-  def user_from_token
-    token = bearer_token
-    return nil unless token
-
-    payload = JsonWebToken.decode(token)
-    return nil unless payload
-
-    User.find_by(id: payload[:user_id])
-  end
 
   def bearer_token
     header = request.headers["Authorization"]
