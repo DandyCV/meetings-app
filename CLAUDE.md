@@ -32,6 +32,11 @@ e2e/             Playwright end-to-end tests (repo root)
 
 App-specific commands (console, migrate, per-suite runs) live in each app's `CLAUDE.md`.
 
+**Before starting a server for FE/BE validation, check whether it is already running** — probe
+`http://localhost:3000` (frontend) / `http://localhost:3001/up` (backend) and reuse a live one
+instead of launching a duplicate (which will fail on the busy port). `npm run test:e2e` already
+reuses running servers locally.
+
 ## Backend at a glance
 
 API-only Rails. Routes: `POST /api/v1/registrations`, `POST /api/v1/sessions`, `GET /api/v1/me`,
