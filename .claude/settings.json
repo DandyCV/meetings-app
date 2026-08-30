@@ -1,0 +1,60 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev:*)",
+      "Bash(npm test)",
+      "Bash(npm run test:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run format)",
+      "Bash(npm run format:*)",
+      "Bash(npm run build)",
+      "Bash(npm run setup)",
+      "Bash(npm run setup:*)",
+      "Bash(npm install)",
+      "Bash(npm ci)",
+      "Bash(npx playwright:*)",
+      "Bash(cd apps/backend && bin/rspec:*)",
+      "Bash(cd apps/backend && bin/rails:*)",
+      "Bash(cd apps/backend && bin/rubocop:*)",
+      "Bash(cd apps/backend && bin/rails db:*)",
+      "Bash(cd apps/backend && bundle install)",
+      "Bash(cd apps/backend && bundle exec:*)",
+      "Bash(bin/rspec:*)",
+      "Bash(bin/rubocop:*)",
+      "Bash(bundle exec rspec:*)",
+      "Bash(bundle exec rubocop:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git stash list)",
+      "Bash(rg:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)"
+    ],
+    "deny": [
+      "Read(./apps/backend/config/master.key)",
+      "Read(./apps/backend/.env)",
+      "Read(./apps/backend/.env.*)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/format.sh\"",
+            "statusMessage": "Formatting changed file"
+          }
+        ]
+      }
+    ]
+  }
+}
