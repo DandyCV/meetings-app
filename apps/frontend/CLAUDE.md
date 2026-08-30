@@ -40,6 +40,10 @@ repo-root `CLAUDE.md` for monorepo layout and cross-cutting project rules.
 
 - New/changed user-facing behavior → an E2E spec in `e2e/` (repo root). Run `npm run test:e2e`
   before reporting done. See memory `testing-discipline`.
+- **UI/UX review is a completion gate.** Any UI change (new or modified) is not done until you
+  have (1) checked it visually — boot the app, screenshot the affected page(s) in the relevant
+  states/breakpoints — and (2) run it through the `ui-ux-pro-max` skill and fixed what it flags.
+  See memory `ui-review-after-ui-changes`.
 - `@types/react` / `@types/react-dom` must stay in the ROOT `package.json` devDependencies
   (npm-workspace hoisting — see memory `npm-workspaces-types-react-hoisting`).
 - Screenshots: after any user-facing change, capture the affected page(s) with `/run` or
