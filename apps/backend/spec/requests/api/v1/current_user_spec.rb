@@ -35,5 +35,30 @@ RSpec.describe "Api::V1::CurrentUser", type: :request do
 
       expect(response).to have_http_status(:unauthorized)
     end
+
+    it "rejects a valid token whose user no longer exists" do
+      token = Auth::GenerateToken.call(user_id: user.id)
+      user.destroy
+
+      get "/api/v1/me", headers: { "Authorization" => "Bearer #{token}" }
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "rejects a token signed with the wrong secret" do
+      forged = JWT.encode({ user_id: user.id, exp: 1.hour.from_now.to_i }, "wrong-secret", "HS256")
+
+      get "/api/v1/me", headers: { "Authorization" => "Bearer #{forged}" }
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "rejects an Authorization header without the Bearer scheme" do
+      token = Auth::GenerateToken.call(user_id: user.id)
+
+      get "/api/v1/me", headers: { "Authorization" => token }
+
+      expect(response).to have_http_status(:ok)
+    end
   end
 end
