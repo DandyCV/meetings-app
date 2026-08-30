@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Card, Spinner, Typography } from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -47,9 +48,9 @@ export default function Home() {
           {user.email}
         </Typography>
         <div className="flex shrink-0 items-center gap-3">
-          <Button render={(props) => <NextLink {...props} href="/meetings/new" />}>
+          <NextLink className={buttonVariants()} href="/meetings/new">
             New meeting
-          </Button>
+          </NextLink>
           <Button
             variant="secondary"
             onPress={() => {
@@ -75,12 +76,9 @@ export default function Home() {
         {meetings !== null && meetings.length === 0 && (
           <div className="flex flex-col items-start gap-3">
             <Typography color="muted">You don&apos;t have any meetings yet.</Typography>
-            <Button
-              variant="secondary"
-              render={(props) => <NextLink {...props} href="/meetings/new" />}
-            >
+            <NextLink className={buttonVariants({ variant: "secondary" })} href="/meetings/new">
               Create your first meeting
-            </Button>
+            </NextLink>
           </div>
         )}
 
