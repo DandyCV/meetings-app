@@ -78,4 +78,43 @@ test.describe("Authentication", () => {
     await page.goto("/");
     await expect(page).toHaveURL("/login");
   });
+
+  test("registration shows an error when the password confirmation does not match", async ({
+    page,
+  }) => {
+    await page.goto("/register");
+    await page.getByLabel("Email").fill(uniqueEmail());
+    await page.getByLabel("Password", { exact: true }).fill(PASSWORD);
+    await page.getByLabel("Confirm password").fill(`${PASSWORD}-nope`);
+    await page.getByRole("button", { name: "Sign up" }).click();
+
+    await expect(page.getByText(/password confirmation/i)).toBeVisible();
+    await expect(page).toHaveURL(/\/register$/);
+  });
+
+  test("the login page links to registration and back", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("link", { name: "Sign up" }).click();
+    await expect(page).toHaveURL(/\/register$/);
+
+    await page.getByRole("link", { name: "Log in" }).click();
+    await expect(page).toHaveURL(/\/login$/);
+  });
+
+  test("a session survives a full page reload", async ({ page }) => {
+    const email = uniqueEmail();
+    await registerViaUi(page, email);
+
+    await page.reload();
+
+    await expect(page).toHaveURL("/");
+    await expect(page.getByRole("heading", { name: email })).toBeVisible();
+  });
+
+  test("a freshly registered user sees an empty meetings list", async ({ page }) => {
+    await registerViaUi(page, uniqueEmail());
+
+    await expect(page.getByRole("heading", { name: "Latest meetings" })).toBeVisible();
+    await expect(page.getByText(/don't have any meetings yet/i)).toBeVisible();
+  });
 });
