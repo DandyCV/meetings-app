@@ -28,7 +28,11 @@ repo-root `CLAUDE.md` for monorepo layout and cross-cutting project rules.
   (`.status`, `.message`, `.errors`). Base URL from `NEXT_PUBLIC_API_URL`
   (default `http://localhost:3001/api/v1`, see `.env.local`).
 - Pages: `/login`, `/register` (HeroUI `Form`/`TextField`), `/` (protected — redirects to `/login`
-  when no user; lists meetings).
+  when no user; lists meetings, links to each and to `/meetings/new`), `/meetings/new` (protected —
+  create form, HeroUI `Form`/`TextField`/`TextArea`), `/meetings/[id]` (protected — meeting detail,
+  `useParams`; 404 → "not found" message).
+- `src/lib/meetings.ts` — `Meeting` type, `fetchMeetings` / `fetchMeeting` / `createMeeting`,
+  `formatMeetingDate`.
 - UI: HeroUI v3 components only (`@heroui/react`), Tailwind v4 utility classes, `next-themes` for
   light/dark.
 

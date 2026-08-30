@@ -9,14 +9,37 @@ module Api
         render json: meetings.map { |meeting| meeting_json(meeting) }
       end
 
+      # GET /api/v1/meetings/:id
+      def show
+        meeting = current_user.meetings.find_by(id: params[:id])
+        return render json: { error: "Not found" }, status: :not_found unless meeting
+
+        render json: meeting_json(meeting)
+      end
+
+      # POST /api/v1/meetings
+      def create
+        meeting = current_user.meetings.new(meeting_params)
+
+        if meeting.save
+          render json: meeting_json(meeting), status: :created
+        else
+          render json: { errors: meeting.errors.full_messages }, status: :unprocessable_content
+        end
+      end
+
       private
+
+      def meeting_params
+        params.require(:meeting).permit(:title, :description, :starts_at)
+      end
 
       def meeting_json(meeting)
         {
           id: meeting.id,
           title: meeting.title,
           description: meeting.description,
-          starts_at: meeting.starts_at.iso8601
+          starts_at: meeting.starts_at&.iso8601
         }
       end
     end
