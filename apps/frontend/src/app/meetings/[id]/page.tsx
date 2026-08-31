@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { ApiError } from "@/lib/api";
 import { fetchMeeting, formatMeetingDate, type Meeting } from "@/lib/meetings";
 import { getToken } from "@/lib/token";
+import { MeetingAttachments } from "./MeetingAttachments";
 
 type LoadState =
   { status: "loading" } | { status: "ready"; meeting: Meeting } | { status: "not-found" };
@@ -57,17 +58,20 @@ export default function MeetingPage() {
       {state.status === "not-found" ? (
         <Typography color="muted">This meeting could not be found.</Typography>
       ) : (
-        <Card>
-          <Card.Header>
-            <Card.Title>{state.meeting.title}</Card.Title>
-            <Card.Description>{formatMeetingDate(state.meeting.starts_at)}</Card.Description>
-          </Card.Header>
-          {state.meeting.description && (
-            <Card.Content>
-              <Typography type="body-sm">{state.meeting.description}</Typography>
-            </Card.Content>
-          )}
-        </Card>
+        <>
+          <Card>
+            <Card.Header>
+              <Card.Title>{state.meeting.title}</Card.Title>
+              <Card.Description>{formatMeetingDate(state.meeting.starts_at)}</Card.Description>
+            </Card.Header>
+            {state.meeting.description && (
+              <Card.Content>
+                <Typography type="body-sm">{state.meeting.description}</Typography>
+              </Card.Content>
+            )}
+          </Card>
+          <MeetingAttachments meetingId={state.meeting.id} />
+        </>
       )}
     </main>
   );
