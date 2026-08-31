@@ -1,12 +1,12 @@
 ---
 name: plan-to-github
-description: "Use when the user wants an implementation plan in doc/plans/ turned into GitHub milestones and issues, mentions creating milestones/issues from a plan, or runs /plan-to-github."
+description: "Use when the user wants an implementation plan in docs/plans/ turned into GitHub milestones and issues, mentions creating milestones/issues from a plan, or runs /plan-to-github."
 disable-model-invocation: true
 ---
 
 # plan-to-github
 
-Turn one implementation plan (`doc/plans/<slug>.md`, phased per `docs/agents/plans.md`)
+Turn one implementation plan (`docs/plans/<slug>.md`, phased per `docs/agents/plans.md`)
 into GitHub milestones and issues for `DandyCV/meetings-app` using the `gh` CLI:
 
 - **one milestone per phase** (`# Phase ...` heading)
@@ -22,14 +22,14 @@ This creates real GitHub objects. Confirm with the user before the first write.
 
 ## Process
 
-1. **Pick the plan.** Use the path the user gave. Otherwise list `doc/plans/*.md`; if
+1. **Pick the plan.** Use the path the user gave. Otherwise list `docs/plans/*.md`; if
    there is exactly one, use it, else ask which.
 
 2. **Parse it.** Run the bundled parser (handles fenced code blocks, keeps each task's
    full section as its body):
 
    ```bash
-   python3 .claude/skills/plan-to-github/parse_plan.py doc/plans/<slug>.md
+   python3 .claude/skills/plan-to-github/parse_plan.py docs/plans/<slug>.md
    ```
 
    It prints JSON: `{ plan_path, phases: [ { title, body, tasks: [ { title, body } ] } ] }`.
@@ -64,8 +64,11 @@ This creates real GitHub objects. Confirm with the user before the first write.
        --milestone "Phase A — Storage foundation"
      ```
 
-   - Append two lines to every issue body before creating: a link back to the plan
-     (`Plan: doc/plans/<slug>.md`) and the phase name (`Phase: <phase.title>`).
+   - Append these lines to every issue body before creating: a link back to the plan
+     (`Plan: docs/plans/<slug>.md`), the phase name (`Phase: <phase.title>`), and —
+     if `docs/research/<slug>.md` exists — `Research (read first): docs/research/<slug>.md`
+     plus the sentence `Follow the research doc's recommendations; they override the
+     plan where they conflict.`
 
 6. **Add each issue to the project board.** The repo's Projects v2 board is
    **"Meetings App — Delivery"**, `https://github.com/users/DandyCV/projects/2`,

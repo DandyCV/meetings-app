@@ -1,14 +1,23 @@
 # Implementation plans
 
 Implementation plans (from `/superpowers:writing-plans` or written by hand) live as
-local markdown under `doc/plans/`.
+local markdown under `docs/plans/`.
 
 ## Conventions
 
-- One plan per file: `doc/plans/<feature-slug>.md`
-- The plan names the spec it implements (`doc/specs/<feature-slug>/spec.md`) in its
+- One plan per file: `docs/plans/<feature-slug>.md`
+- The plan names the spec it implements (`docs/specs/<feature-slug>/spec.md`) in its
   header, and argues every decision from that spec
 - All content in English (see memory `english-only-project-content`)
+
+## Technical research is binding input
+
+If a technical research doc exists at `docs/research/<feature-slug>.md`, every agent
+or subagent that implements a task/issue of that feature **must read it before
+writing code** and follow its findings and recommendations. Where the research
+contradicts the plan's proposed approach, the research wins; call out the divergence
+in the task commit and the PR. Plans should cite the research doc in their header
+alongside the spec when one exists.
 
 ## Structure: phases
 
