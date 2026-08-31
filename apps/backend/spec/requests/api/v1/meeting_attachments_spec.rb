@@ -156,4 +156,80 @@ RSpec.describe "Api::V1::Meeting attachments", type: :request do
       expect(response).to have_http_status(:unauthorized)
     end
   end
+
+  describe "GET /api/v1/meetings/:meeting_id/attachments/:id/download" do
+    it "streams the file with its original filename and content type" do
+      attachment = create_attachment(filename: "minutes.txt")
+
+      get "/api/v1/meetings/#{meeting.id}/attachments/#{attachment.id}/download",
+          headers: auth_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to eq("data")
+      expect(response.content_type).to start_with("text/plain")
+      expect(response.headers["Content-Disposition"]).to include("minutes.txt")
+    end
+
+    it "returns 404 for an attachment on another user's meeting" do
+      foreign_meeting = other_user.meetings.create!(title: "Not mine", starts_at: 1.day.from_now)
+      foreign = create_attachment(target: foreign_meeting)
+
+      get "/api/v1/meetings/#{foreign_meeting.id}/attachments/#{foreign.id}/download",
+          headers: auth_headers
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "rejects unauthenticated requests" do
+      attachment = create_attachment
+
+      get "/api/v1/meetings/#{meeting.id}/attachments/#{attachment.id}/download"
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+  end
+
+  describe "DELETE /api/v1/meetings/:meeting_id/attachments/:id" do
+    it "removes the attachment and returns 204" do
+      attachment = create_attachment
+
+      expect do
+        delete "/api/v1/meetings/#{meeting.id}/attachments/#{attachment.id}",
+               headers: auth_headers
+      end.to change { meeting.meeting_attachments.count }.by(-1)
+
+      expect(response).to have_http_status(:no_content)
+
+      get "/api/v1/meetings/#{meeting.id}/attachments", headers: auth_headers
+      expect(response.parsed_body).to eq([])
+    end
+
+    it "returns 404 for an attachment on another user's meeting" do
+      foreign_meeting = other_user.meetings.create!(title: "Not mine", starts_at: 1.day.from_now)
+      foreign = create_attachment(target: foreign_meeting)
+
+      delete "/api/v1/meetings/#{foreign_meeting.id}/attachments/#{foreign.id}",
+             headers: auth_headers
+
+      expect(response).to have_http_status(:not_found)
+      expect(MeetingAttachment.exists?(foreign.id)).to be(true)
+    end
+
+    it "rejects unauthenticated requests" do
+      attachment = create_attachment
+
+      delete "/api/v1/meetings/#{meeting.id}/attachments/#{attachment.id}"
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+  end
+
+  describe "deleting the parent meeting" do
+    it "removes its attachments" do
+      create_attachment
+      create_attachment(filename: "second.txt")
+
+      expect { meeting.destroy }.to change(MeetingAttachment, :count).by(-2)
+    end
+  end
 end

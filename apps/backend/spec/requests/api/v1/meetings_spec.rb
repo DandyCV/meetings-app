@@ -53,6 +53,19 @@ RSpec.describe "Api::V1::Meetings", type: :request do
       )
     end
 
+    it "includes an accurate attachments_count" do
+      meeting = user.meetings.create!(title: "Planning", starts_at: 2.days.from_now)
+      2.times do |i|
+        a = meeting.meeting_attachments.build
+        a.file.attach(io: StringIO.new("x"), filename: "f#{i}.txt", content_type: "text/plain")
+        a.save!
+      end
+
+      get "/api/v1/meetings/#{meeting.id}", headers: auth_headers
+
+      expect(response.parsed_body["attachments_count"]).to eq(2)
+    end
+
     it "returns 404 for a meeting that belongs to another user" do
       meeting = other_user.meetings.create!(title: "Not mine", starts_at: 1.day.from_now)
 

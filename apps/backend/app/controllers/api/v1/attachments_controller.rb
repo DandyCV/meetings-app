@@ -23,6 +23,28 @@ module Api
         end
       end
 
+      # GET /api/v1/meetings/:meeting_id/attachments/:id/download
+      def download
+        attachment = @meeting.meeting_attachments.find_by(id: params[:id])
+        return render json: { error: "Not found" }, status: :not_found unless attachment
+
+        blob = attachment.file
+        # Research §5: serve via content_type_for_serving (Active Storage idiom that
+        # forces octet-stream for content types configured to serve as binary).
+        send_data blob.download,
+                  filename: blob.filename.to_s,
+                  type: blob.content_type_for_serving,
+                  disposition: "attachment"
+      end
+
+      # DELETE /api/v1/meetings/:meeting_id/attachments/:id
+      def destroy
+        result = Meetings::RemoveMeetingAttachment.call(meeting: @meeting, id: params[:id])
+        return render json: { error: "Not found" }, status: :not_found if result.failure?
+
+        head :no_content
+      end
+
       private
 
       def set_meeting
