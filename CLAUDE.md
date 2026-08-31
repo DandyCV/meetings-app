@@ -107,7 +107,13 @@ in the commit / PR when that happens.
   `english-only-project-content`.
 - `@types/react` / `@types/react-dom` must stay in the ROOT `package.json` devDependencies
   (npm-workspace hoisting — see memory `npm-workspaces-types-react-hoisting`).
-- Don't commit or push unless asked. Branch off `main` first.
+- Don't commit or push unless asked. Base feature branches on `dev` and open PRs
+  against `dev` (not `main`).
+- Never commit or push to the `main` or `dev` branch directly — both are integration
+  branches that only receive changes via merged PRs. All work happens on a feature
+  branch (in a worktree, or after `git switch -c`); never with `dev`/`main` checked out.
+- Before starting feature work, ensure the local `dev` branch is up to date with
+  `origin/dev` (`git fetch` + fast-forward) and branch from there.
 - Screenshots: after any user-facing frontend change, capture the affected page(s) with
   `/run` or Playwright and save every screenshot to `screenshots/` at the repo root — never
   elsewhere, never `/tmp`. The dir is gitignored (kept via `.gitkeep`); throwaway artifacts.
