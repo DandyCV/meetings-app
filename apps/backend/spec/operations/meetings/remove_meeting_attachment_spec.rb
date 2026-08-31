@@ -30,6 +30,13 @@ RSpec.describe Meetings::RemoveMeetingAttachment do
     expect(result.value.id).to eq(attachment.id)
   end
 
+  it "purges the blob synchronously rather than deferring it" do
+    attachment = attach(meeting)
+
+    expect { described_class.call(meeting: meeting, id: attachment.id) }
+      .to change(ActiveStorage::Blob, :count).by(-1)
+  end
+
   it "fails when the id is not an attachment on this meeting" do
     foreign = attach(other_meeting)
     result = described_class.call(meeting: meeting, id: foreign.id)

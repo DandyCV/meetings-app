@@ -43,6 +43,16 @@ RSpec.describe Meetings::AttachMeetingFile do
     expect(meeting.meeting_attachments.count).to eq(0)
   end
 
+  it "fails on non-file input and persists / enqueues nothing" do
+    expect do
+      result = described_class.call(meeting: meeting, file: "not-a-file")
+      expect(result).to be_failure
+      expect(result.errors).to be_present
+    end.not_to have_enqueued_job(ProcessMeetingAttachmentJob)
+
+    expect(meeting.meeting_attachments.count).to eq(0)
+  end
+
   it "fails on an empty file and enqueues nothing" do
     expect do
       result = described_class.call(meeting: meeting, file: uploaded_file(content: ""))

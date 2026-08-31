@@ -124,6 +124,14 @@ RSpec.describe "Api::V1::Meeting attachments", type: :request do
       expect(response).to have_http_status(:unprocessable_content)
     end
 
+    it "returns 422 when the file param is not an uploaded file" do
+      post "/api/v1/meetings/#{meeting.id}/attachments",
+           params: { attachment: { file: "x" } }, headers: auth_headers
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body["errors"]).to be_present
+    end
+
     it "returns 422 for a disallowed content type" do
       post "/api/v1/meetings/#{meeting.id}/attachments",
            params: { attachment: { file: upload(name: "a.exe", type: "application/x-msdownload") } },
@@ -180,6 +188,16 @@ RSpec.describe "Api::V1::Meeting attachments", type: :request do
       expect(response).to have_http_status(:not_found)
     end
 
+    it "returns 404 for an attachment that belongs to a different meeting" do
+      other = user.meetings.create!(title: "Retro", starts_at: 2.days.from_now)
+      foreign = create_attachment(target: other)
+
+      get "/api/v1/meetings/#{meeting.id}/attachments/#{foreign.id}/download",
+          headers: auth_headers
+
+      expect(response).to have_http_status(:not_found)
+    end
+
     it "rejects unauthenticated requests" do
       attachment = create_attachment
 
@@ -219,6 +237,17 @@ RSpec.describe "Api::V1::Meeting attachments", type: :request do
       foreign = create_attachment(target: foreign_meeting)
 
       delete "/api/v1/meetings/#{foreign_meeting.id}/attachments/#{foreign.id}",
+             headers: auth_headers
+
+      expect(response).to have_http_status(:not_found)
+      expect(MeetingAttachment.exists?(foreign.id)).to be(true)
+    end
+
+    it "returns 404 for an attachment that belongs to a different meeting" do
+      other = user.meetings.create!(title: "Retro", starts_at: 2.days.from_now)
+      foreign = create_attachment(target: other)
+
+      delete "/api/v1/meetings/#{meeting.id}/attachments/#{foreign.id}",
              headers: auth_headers
 
       expect(response).to have_http_status(:not_found)

@@ -4,7 +4,11 @@ class AddMeetingAttachmentsCountToMeetings < ActiveRecord::Migration[8.1]
 
     reversible do |dir|
       dir.up do
-        Meeting.find_each { |m| Meeting.reset_counters(m.id, :meeting_attachments) }
+        execute <<~SQL
+          UPDATE meetings SET meeting_attachments_count = (
+            SELECT COUNT(*) FROM meeting_attachments WHERE meeting_attachments.meeting_id = meetings.id
+          )
+        SQL
       end
     end
   end

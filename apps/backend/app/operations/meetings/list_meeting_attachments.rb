@@ -8,7 +8,7 @@ module Meetings
     def call
       @meeting.meeting_attachments
               .with_attached_file
-              .order(created_at: :asc)
+              .order(created_at: :asc, id: :asc)
     end
   end
 end
