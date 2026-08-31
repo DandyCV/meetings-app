@@ -1,14 +1,14 @@
 # Issue tracker: Local Markdown
 
 Generated specs and implementation issues for this repo live as markdown files
-under `doc/specs/`.
+under `docs/specs/`.
 
 ## Conventions
 
-- One feature per directory: `doc/specs/<feature-slug>/`
-- The spec is `doc/specs/<feature-slug>/spec.md`
+- One feature per directory: `docs/specs/<feature-slug>/`
+- The spec is `docs/specs/<feature-slug>/spec.md`
 - Implementation issues are one file per ticket at
-  `doc/specs/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01`, never a
+  `docs/specs/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01`, never a
   single combined tickets file
 - Triage state is recorded as a `Status:` line near the top of each issue file
 - Comments and conversation history append to the bottom of the file under a
@@ -28,8 +28,8 @@ under `doc/specs/`.
 
 ## When a skill says "publish to the issue tracker"
 
-Create a new file under `doc/specs/<feature-slug>/` (creating the directory if
-needed). For `/to-spec`, write `doc/specs/<feature-slug>/spec.md`. There are no
+Create a new file under `docs/specs/<feature-slug>/` (creating the directory if
+needed). For `/to-spec`, write `docs/specs/<feature-slug>/spec.md`. There are no
 labels to apply — record `Status: ready-for-agent` near the top of the file
 instead.
 

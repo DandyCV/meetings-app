@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Parse an implementation plan (doc/plans/<slug>.md) into phases and tasks.
+"""Parse an implementation plan (docs/plans/<slug>.md) into phases and tasks.
 
 Phases are `# Phase ...` headings; tasks are `## Task ...` headings nested under
 them. Headings inside fenced code blocks (``` or ~~~) are ignored. Emits JSON on
 stdout:
 
   {
-    "plan_path": "doc/plans/foo.md",
+    "plan_path": "docs/plans/foo.md",
     "phases": [
       {
         "title": "Phase A - Storage foundation",
@@ -18,7 +18,7 @@ stdout:
     ]
   }
 
-Usage: parse_plan.py doc/plans/<slug>.md
+Usage: parse_plan.py docs/plans/<slug>.md
 """
 import json
 import re

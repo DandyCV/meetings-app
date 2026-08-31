@@ -8,11 +8,11 @@
 
 **Tech Stack:** Rails 8.1 API-only, Ruby 4.0, PostgreSQL 17, Active Storage (disk service), Active Job (`:test` adapter in tests), RSpec. Next.js 16 App Router, TypeScript, HeroUI v3, Tailwind v4. Playwright E2E.
 
-**Spec:** `doc/specs/meeting-file-upload/spec.md` — read it alongside this plan. Every decision here is argued from that spec.
+**Spec:** `docs/specs/meeting-file-upload/spec.md` — read it alongside this plan. Every decision here is argued from that spec.
 
 ## Global Constraints
 
-- **TDD, non-negotiable.** For every task: write the failing test, run it, watch it fail for the right reason, write the minimum code to pass, run it green, then refactor. No production code without a failing test driving it. (`doc/specs/meeting-file-upload/spec.md` → Testing Decisions → Process: TDD.)
+- **TDD, non-negotiable.** For every task: write the failing test, run it, watch it fail for the right reason, write the minimum code to pass, run it green, then refactor. No production code without a failing test driving it. (`docs/specs/meeting-file-upload/spec.md` → Testing Decisions → Process: TDD.)
 - **All repo content in English** — code, comments, commits, branch names, test data. (memory `english-only-project-content`.)
 - **Tests after every change.** `npm test` (backend RSpec) for backend work, `npm run test:e2e` (Playwright) for frontend work, both for anything touching the API contract. Never leave a red or unrun suite. (memory `testing-discipline`.)
 - **Backend conventions** (`apps/backend/CLAUDE.md`): RuboCop Rails Omakase — double quotes, spaces inside array/hash literal brackets (`[ "a" ]`), no `# frozen_string_literal`. Controllers render plain hashes as JSON, no serializer. Error shape: `{ error: "..." }` for 401/404, `{ errors: [ ... ] }` for 422 `:unprocessable_content`. Migrations and `db/schema.rb` stay in `apps/backend/db/`, never in engines.
@@ -463,7 +463,7 @@ Create `apps/backend/app/jobs/process_meeting_attachment_job.rb`:
 # Placeholder for the meeting-attachment processing pipeline.
 #
 # TODO(meeting-file-processing): the real work (transcription, summarisation,
-# etc.) is a separate spec. This spec (doc/specs/meeting-file-upload/spec.md)
+# etc.) is a separate spec. This spec (docs/specs/meeting-file-upload/spec.md)
 # only establishes the enqueue seam and the processing_status lifecycle; for now
 # the job simply advances the attachment out of "pending".
 class ProcessMeetingAttachmentJob < ApplicationJob
@@ -1852,7 +1852,7 @@ git commit -m "feat: add meeting attachments UI to the detail page"
 - [ ] `CLAUDE.md` (root), `apps/backend/CLAUDE.md`, `apps/frontend/CLAUDE.md` updated: new routes, Active Storage enabled, `MeetingAttachment` + operations + job seam, `apiFetch` FormData, detail-page attachments UI.
 - [ ] Memory file `meeting-attachments.md` created and `MEMORY.md` pointer added.
 - [ ] Clean-state full run all green: `npm test`, `npm run lint`, `npm run typecheck`, `npm run build`, `npm run test:e2e`.
-- [ ] Spec self-review done: every user story 1–32 in `doc/specs/meeting-file-upload/spec.md` maps to shipped behaviour or documented out-of-scope.
+- [ ] Spec self-review done: every user story 1–32 in `docs/specs/meeting-file-upload/spec.md` maps to shipped behaviour or documented out-of-scope.
 - [ ] PR opened against `main` linking the spec + plan, listing endpoints, noting Active Storage, with screenshots attached, and the `🤖 Generated with…` trailer.
 - [ ] Code review requested (`superpowers:requesting-code-review` or `/code-review high`).
 
@@ -1942,8 +1942,8 @@ metadata:
 ---
 
 Meetings can have file attachments (added 2026-08-30, spec
-`doc/specs/meeting-file-upload/spec.md`, plan
-`doc/plans/2026-08-30-meeting-file-upload.md`).
+`docs/specs/meeting-file-upload/spec.md`, plan
+`docs/plans/2026-08-30-meeting-file-upload.md`).
 
 - Active Storage is enabled (disk service; cloud storage deliberately deferred).
 - `MeetingAttachment` — host model, `belongs_to :meeting`, `has_one_attached :file`,
@@ -2003,7 +2003,7 @@ Expected: all green. If `maintain_test_schema!` complains about pending migratio
 
 - [ ] **Step 2: Self-review the diff against the spec**
 
-Walk `doc/specs/meeting-file-upload/spec.md` user stories 1–32 and confirm each maps to shipped behaviour or is explicitly out of scope. In particular re-check: 20/21/22 (ownership + auth + 404), 29 (meeting delete cascades), 30 (download filename/type), 31 (same-name files), 32 (empty file rejected).
+Walk `docs/specs/meeting-file-upload/spec.md` user stories 1–32 and confirm each maps to shipped behaviour or is explicitly out of scope. In particular re-check: 20/21/22 (ownership + auth + 404), 29 (meeting delete cascades), 30 (download filename/type), 31 (same-name files), 32 (empty file rejected).
 
 - [ ] **Step 3: Push and open the PR**
 

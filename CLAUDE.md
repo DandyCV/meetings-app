@@ -68,7 +68,7 @@ UI is HeroUI v3 only. See `apps/frontend/CLAUDE.md`.
 
 ### Issue tracker
 
-Generated specs live as local markdown under `doc/specs/<feature-slug>/spec.md` — the
+Generated specs live as local markdown under `docs/specs/<feature-slug>/spec.md` — the
 `/to-spec` skill writes there, not to GitHub Issues. Every spec must include
 **Technical Constraints**, a **Testing Decisions → Process: TDD** clause
 (red-green-refactor), and a numbered **Acceptance Criteria** checklist. See
@@ -76,11 +76,20 @@ Generated specs live as local markdown under `doc/specs/<feature-slug>/spec.md` 
 
 ### Implementation plans
 
-Plans live as local markdown under `doc/plans/<feature-slug>.md`. Every plan is split
+Plans live as local markdown under `docs/plans/<feature-slug>.md`. Every plan is split
 into independent **phases** — each a self-contained, independently testable unit with an
 explicit Definition-of-Done checklist, delegable to a single subagent. `/plan-to-github`
 turns a plan into GitHub milestones (per phase) + issues (per task). See
 `docs/agents/plans.md`.
+
+### Technical research
+
+Pre-implementation technical research lives as local markdown under
+`docs/research/<feature-slug>.md`. **When a research doc exists for the feature slug,
+any agent or subagent implementing that feature's issues/tasks MUST read
+`docs/research/<feature-slug>.md` first and follow its findings and recommendations**
+— they override the plan's proposed approach where they conflict. Note the divergence
+in the commit / PR when that happens.
 
 ## Project rules
 
