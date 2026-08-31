@@ -204,6 +204,16 @@ RSpec.describe "Api::V1::Meeting attachments", type: :request do
       expect(response.parsed_body).to eq([])
     end
 
+    it "decrements the meeting's cached attachments counter" do
+      attachment = create_attachment
+      expect(meeting.reload.meeting_attachments_count).to eq(1)
+
+      delete "/api/v1/meetings/#{meeting.id}/attachments/#{attachment.id}",
+             headers: auth_headers
+
+      expect(meeting.reload.meeting_attachments_count).to eq(0)
+    end
+
     it "returns 404 for an attachment on another user's meeting" do
       foreign_meeting = other_user.meetings.create!(title: "Not mine", starts_at: 1.day.from_now)
       foreign = create_attachment(target: foreign_meeting)

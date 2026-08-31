@@ -20,7 +20,7 @@ class MeetingAttachment < ApplicationRecord
     application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
   ].freeze
 
-  belongs_to :meeting
+  belongs_to :meeting, counter_cache: true
 
   has_one_attached :file
 
