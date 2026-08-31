@@ -1,7 +1,7 @@
 "use client";
 
 import { Alert, AlertDialog, Button, Chip, Spinner, Typography } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/lib/api";
 import {
   ALLOWED_ATTACHMENT_TYPES,
@@ -35,16 +35,26 @@ export function MeetingAttachments({ meetingId }: { meetingId: number }) {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<MeetingAttachment | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchAttachments(meetingId, getToken())
-      .then(setAttachments)
-      .catch(() => setAttachments([]));
+  const load = useCallback(() => {
+    return fetchAttachments(meetingId, getToken())
+      .then((list) => {
+        setAttachments(list);
+        setLoadError(null);
+      })
+      .catch((err: unknown) => {
+        setLoadError(
+          err instanceof ApiError
+            ? (err.errors[0] ?? err.message)
+            : "Could not load files. Please try again.",
+        );
+      });
   }, [meetingId]);
 
-  async function reload() {
-    setAttachments(await fetchAttachments(meetingId, getToken()));
-  }
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   async function handleFile(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -70,7 +80,7 @@ export function MeetingAttachments({ meetingId }: { meetingId: number }) {
     setIsUploading(true);
     try {
       await uploadAttachment(meetingId, file, getToken());
-      await reload();
+      await load();
       setNotice("File uploaded.");
     } catch (err) {
       setError(
@@ -91,7 +101,7 @@ export function MeetingAttachments({ meetingId }: { meetingId: number }) {
     setNotice(null);
     try {
       await deleteAttachment(meetingId, target.id, getToken());
-      await reload();
+      await load();
       setNotice("File removed.");
     } catch {
       setError("Could not remove that file. Please try again.");
@@ -111,7 +121,6 @@ export function MeetingAttachments({ meetingId }: { meetingId: number }) {
         <input
           id="attachment-input"
           type="file"
-          aria-label="Upload file"
           disabled={isUploading}
           onChange={handleFile}
           className="text-sm"
@@ -141,18 +150,33 @@ export function MeetingAttachments({ meetingId }: { meetingId: number }) {
         </Alert>
       )}
 
-      {attachments === null && (
+      {loadError && (
+        <div className="flex flex-col items-start gap-2">
+          <Alert status="danger">
+            <Alert.Indicator />
+            <Alert.Content>
+              <Alert.Title>Could not load files</Alert.Title>
+              <Alert.Description>{loadError}</Alert.Description>
+            </Alert.Content>
+          </Alert>
+          <Button size="sm" variant="secondary" onPress={() => void load()}>
+            Try again
+          </Button>
+        </div>
+      )}
+
+      {!loadError && attachments === null && (
         <div className="flex items-center gap-2">
           <Spinner size="sm" />
           <Typography color="muted">Loading files…</Typography>
         </div>
       )}
 
-      {attachments !== null && attachments.length === 0 && (
+      {!loadError && attachments !== null && attachments.length === 0 && (
         <Typography color="muted">No files attached yet.</Typography>
       )}
 
-      {attachments !== null && attachments.length > 0 && (
+      {!loadError && attachments !== null && attachments.length > 0 && (
         <ul className="divide-y divide-border rounded-lg border">
           {attachments.map((attachment) => (
             <li
