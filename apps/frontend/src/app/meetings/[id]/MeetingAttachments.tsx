@@ -152,7 +152,7 @@ export function MeetingAttachments({ meetingId }: { meetingId: number }) {
 
       {loadError && (
         <div className="flex flex-col items-start gap-2">
-          <Alert status="danger">
+          <Alert status="danger" role="alert">
             <Alert.Indicator />
             <Alert.Content>
               <Alert.Title>Could not load files</Alert.Title>

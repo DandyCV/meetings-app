@@ -19,6 +19,9 @@ test.describe("Meeting attachments", () => {
 
     const row = page.getByRole("listitem").filter({ hasText: "sample.txt" });
     await expect(row).toBeVisible();
+    // "Pending" holds only because the backend runs with queue_adapter = :test
+    // (ProcessMeetingAttachmentJob is enqueued, not run). A reused dev-env backend
+    // would run the job and flip this to "Processed".
     await expect(row.getByText("Pending")).toBeVisible();
 
     // Download (fetched with auth, handed to the browser as a blob download).

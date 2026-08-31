@@ -61,9 +61,11 @@ UI is HeroUI v3 only. See `apps/frontend/CLAUDE.md`.
 ## Testing
 
 - Backend: RSpec under `apps/backend/spec/`. See `apps/backend/CLAUDE.md`.
-- E2E: `e2e/auth.spec.ts` (register/login/logout/guards). Playwright boots Rails in `test`
-  env on :3001 and Next dev on :3000 automatically; each test uses a random
-  `e2e-…@example.com` account (no seeding). See memory `e2e-auth-tests`.
+- E2E: `e2e/auth.spec.ts` (register/login/logout/guards), `e2e/meetings.spec.ts`
+  (meeting create + list + validation), `e2e/meeting-attachments.spec.ts` (attachment
+  upload / download / delete). Playwright boots Rails in `test` env on :3001 and Next dev
+  on :3000 automatically; each test uses a random `e2e-…@example.com` account (no seeding).
+  See memory `e2e-auth-tests`.
 - CI: `.github/workflows/ci.yml` runs on every PR to `main` and every push to `main` — parallel `backend`
   (`bin/ci`), `frontend` (lint + format:check + build), and `e2e` jobs, each against a
   `postgres:17` service container.
