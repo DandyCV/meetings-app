@@ -20,3 +20,15 @@ export async function registerViaUi(page: Page, email: string): Promise<void> {
   await expect(page).toHaveURL("/");
   await expect(page.getByRole("heading", { name: email })).toBeVisible();
 }
+
+/** Create a meeting through the UI and land on its detail page. */
+export async function createMeetingViaUi(
+  page: Page,
+  { title, startsAt = "2026-12-01T10:00" }: { title: string; startsAt?: string },
+): Promise<void> {
+  await page.getByRole("link", { name: "New meeting" }).click();
+  await page.getByLabel("Title").fill(title);
+  await page.getByLabel("Starts at").fill(startsAt);
+  await page.getByRole("button", { name: "Create meeting" }).click();
+  await expect(page).toHaveURL(/\/meetings\/\d+$/);
+}
