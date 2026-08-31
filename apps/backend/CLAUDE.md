@@ -26,9 +26,14 @@ After changing anything under `engines/`, run `cd apps/backend && bundle install
 ## Architecture
 
 API-only Rails. Routes: `POST /api/v1/registrations`, `POST /api/v1/sessions`, `GET /api/v1/me`,
-`GET /api/v1/meetings`, `GET /api/v1/meetings/:id`, `POST /api/v1/meetings` (meeting routes
-scoped to `current_user`; unknown/other-user meeting ids → 404). Auth = JWT bearer token
-(HS256, `secret_key_base`, 24h exp, payload
+`GET /api/v1/meetings`, `GET /api/v1/meetings/:id`, `POST /api/v1/meetings`,
+`GET/POST /api/v1/meetings/:meeting_id/attachments`,
+`GET /api/v1/meetings/:meeting_id/attachments/:id/download` (JWT-guarded `send_data` stream),
+`DELETE /api/v1/meetings/:meeting_id/attachments/:id` → 204 (meeting routes
+scoped to `current_user`; unknown/other-user meeting ids → 404). Upload is multipart, field
+`attachment[file]` → 201 or 422; `download_url` in payloads is a **relative** path.
+`GET /api/v1/meetings` and `GET /api/v1/meetings/:id` payloads include `attachments_count: Integer`.
+Auth = JWT bearer token (HS256, `secret_key_base`, 24h exp, payload
 `{ user_id }`).
 
 ### Module split (CQRS boundary) — see memory `backend-cqrs-engine-split`
@@ -55,8 +60,27 @@ Business logic lives in three path-gem engines, wired in `apps/backend/Gemfile` 
   `app/operations/<module>/`. One operation per file, `initialize` takes kwargs, logic in `#call`.
 - Engines are NOT `isolate_namespace`; namespacing is by directory.
 - Migrations and `db/schema.rb` stay in `apps/backend/db/` (host), never in engines.
-- `Meeting` (host model, `app/models/meeting.rb`) `belongs_to :user, class_name: "Users::User"`.
+- `Meeting` (host model, `app/models/meeting.rb`) `belongs_to :user, class_name: "Users::User"`,
+  `has_many :meeting_attachments, dependent: :destroy` (+ `meeting_attachments_count` counter cache).
 - Gem deps: `jwt` → `auth.gemspec`, `bcrypt` → `users.gemspec` (not host Gemfile).
+
+### Meeting attachments (host app, not an engine)
+
+- `MeetingAttachment` (`app/models/meeting_attachment.rb`) — host model: `belongs_to :meeting,
+  counter_cache: true`, `has_one_attached :file`, `processing_status` string enum
+  (`pending`/`processed`/`failed`, default `pending`) + `processed_at`. Constants
+  `MAX_FILE_SIZE` (25 MB) and `ALLOWED_CONTENT_TYPES` (PDF, text, common image/audio/video,
+  MS Office/OOXML) — backend-authoritative.
+- Attachment writes go through **host-app** operations in `app/operations/meetings/` (NOT an
+  engine): `Meetings::AttachMeetingFile` / `Meetings::RemoveMeetingAttachment` (`Cqrs::Command`)
+  and `Meetings::ListMeetingAttachments` (`Cqrs::Query`). `Api::V1::AttachmentsController`
+  (nested under meetings) composes them.
+- Active Storage is enabled (`config/application.rb` loads `active_storage/engine`).
+  `config/storage.yml` has `test` + `local` **disk** services; dev/prod use `:local`, test uses
+  `:test`. Cloud storage is a deliberate future config-only change.
+- `ProcessMeetingAttachmentJob` is a **placeholder** seam — a successful upload enqueues exactly
+  one; its body just marks the attachment `processed`. Real processing (transcription/
+  summarisation) is a future spec. Test env sets `config.active_job.queue_adapter = :test`.
 
 ### Conventions
 
@@ -69,8 +93,10 @@ Business logic lives in three path-gem engines, wired in `apps/backend/Gemfile` 
 ## Testing
 
 - RSpec under `apps/backend/spec/`, organized by module — `spec/auth/`, `spec/users/`,
-  `spec/requests/`, `spec/models/`. One host suite (no per-engine dummy apps). Transactional
-  fixtures, no FactoryBot — plain `Users::User.create!` / operation calls.
+  `spec/requests/`, `spec/models/`, `spec/operations/`, `spec/jobs/`. One host suite (no
+  per-engine dummy apps). Transactional fixtures, no FactoryBot — plain `Users::User.create!` /
+  operation calls. A `spec/rails_helper.rb` `after(:suite)` hook clears the Active Storage
+  `:test` disk root between runs (keeps the dir + `.keep`).
 - New/changed behavior → request specs in `spec/requests/` (plus operation specs in
   `spec/auth|users/` when adding a `Cqrs::Command`/`Query`).
 - Before finishing backend work: `npm test` **and** `npm run test:e2e` must be green, plus

@@ -25,14 +25,25 @@ repo-root `CLAUDE.md` for monorepo layout and cross-cutting project rules.
   Token in `localStorage` (`src/lib/token.ts`), in-memory user for re-renders. On mount, hydrates
   user from `GET /me` if a token exists.
 - `src/lib/api.ts` — `apiFetch<T>(path, { method, body, token })`; throws `ApiError`
-  (`.status`, `.message`, `.errors`). Base URL from `NEXT_PUBLIC_API_URL`
-  (default `http://localhost:3001/api/v1`, see `.env.local`).
+  (`.status`, `.message`, `.errors`). A `FormData` body is passed through as-is (no
+  `Content-Type` header, no `JSON.stringify`). Base URL from `NEXT_PUBLIC_API_URL`
+  (default `http://localhost:3001/api/v1`, see `.env.local`), also exported as `API_URL`.
 - Pages: `/login`, `/register` (HeroUI `Form`/`TextField`), `/` (protected — redirects to `/login`
   when no user; lists meetings, links to each and to `/meetings/new`), `/meetings/new` (protected —
   create form, HeroUI `Form`/`TextField`/`TextArea`), `/meetings/[id]` (protected — meeting detail,
-  `useParams`; 404 → "not found" message).
-- `src/lib/meetings.ts` — `Meeting` type, `fetchMeetings` / `fetchMeeting` / `createMeeting`,
-  `formatMeetingDate`.
+  `useParams`; 404 → "not found" message; renders the `MeetingAttachments` section —
+  `src/app/meetings/[id]/MeetingAttachments.tsx`, a `"use client"` block with upload control,
+  attachment list, download, and delete-with-confirm (HeroUI `AlertDialog`), plus empty/
+  loading/error and inline success/error `Alert` states).
+- `src/lib/meetings.ts` — `Meeting` type (now with `attachments_count: number`), `fetchMeetings`
+  / `fetchMeeting` / `createMeeting`, `formatMeetingDate`. Also `ProcessingStatus` +
+  `MeetingAttachment` types, `fetchAttachments` / `uploadAttachment` / `deleteAttachment` /
+  `downloadAttachment` / `formatFileSize`, and `MAX_ATTACHMENT_BYTES` /
+  `ALLOWED_ATTACHMENT_TYPES` (mirror the backend, which stays authoritative).
+- `downloadAttachment` builds its URL from the API **origin**
+  (`new URL(API_URL).origin + attachment.download_url`) — `API_URL` already ends in `/api/v1`
+  and the backend's `download_url` already starts with `/api/v1`, so
+  `` `${API_URL}${download_url}` `` double-prefixes and 404s.
 - UI: HeroUI v3 components only (`@heroui/react`), Tailwind v4 utility classes, `next-themes` for
   light/dark.
 

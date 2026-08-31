@@ -41,15 +41,19 @@ reuses running servers locally.
 ## Backend at a glance
 
 API-only Rails. Routes: `POST /api/v1/registrations`, `POST /api/v1/sessions`, `GET /api/v1/me`,
-`GET /api/v1/meetings`, `GET /api/v1/meetings/:id`, `POST /api/v1/meetings` (all meeting routes
-scoped to `current_user`). Auth = JWT bearer token (HS256, `secret_key_base`, 24h exp, payload
-`{ user_id }`). Business logic lives in three path-gem engines (`cqrs`, `auth`, `users`) —
+`GET /api/v1/meetings`, `GET /api/v1/meetings/:id`, `POST /api/v1/meetings`,
+`GET/POST /api/v1/meetings/:meeting_id/attachments`, `GET .../attachments/:id/download`,
+`DELETE .../attachments/:id` (all meeting routes scoped to `current_user`). Auth = JWT bearer
+token (HS256, `secret_key_base`, 24h exp, payload `{ user_id }`). Active Storage is enabled
+(disk service; cloud storage is a deliberate future config-only change) — meeting attachments
+use `has_one_attached`. Business logic lives in three path-gem engines (`cqrs`, `auth`, `users`) —
 see `apps/backend/CLAUDE.md` and memory `backend-cqrs-engine-split`.
 
 ## Frontend at a glance
 
 App Router pages `/login`, `/register`, `/` (protected — lists meetings), `/meetings/new`
-(protected — create form), `/meetings/[id]` (protected — meeting detail). `useAuth()` from
+(protected — create form), `/meetings/[id]` (protected — meeting detail, with an attachments
+section: upload, list, download, delete). `useAuth()` from
 `src/context/AuthContext.tsx`, `apiFetch` from `src/lib/api.ts`, meeting helpers in
 `src/lib/meetings.ts`, JWT in `localStorage`.
 UI is HeroUI v3 only. See `apps/frontend/CLAUDE.md`.
