@@ -21,9 +21,16 @@ test.describe("Meeting attachments", () => {
     await expect(row).toBeVisible();
     await expect(row.getByText("Pending")).toBeVisible();
 
+    // Download (fetched with auth, handed to the browser as a blob download).
+    const [download] = await Promise.all([
+      page.waitForEvent("download"),
+      row.getByRole("button", { name: "Download" }).click(),
+    ]);
+    expect(download.suggestedFilename()).toBe("sample.txt");
+
     // Delete (through the confirm dialog).
     await row.getByRole("button", { name: "Delete" }).click();
-    await page.getByRole("dialog").getByRole("button", { name: "Delete" }).click();
+    await page.getByRole("alertdialog").getByRole("button", { name: "Delete" }).click();
 
     await expect(page.getByText("sample.txt")).toHaveCount(0);
     await expect(page.getByText("No files attached yet")).toBeVisible();

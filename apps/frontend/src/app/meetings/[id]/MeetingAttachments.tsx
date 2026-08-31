@@ -225,7 +225,7 @@ export function MeetingAttachments({ meetingId }: { meetingId: number }) {
         }}
       >
         <AlertDialog.Container>
-          <AlertDialog.Dialog role="dialog" className="sm:max-w-[400px]">
+          <AlertDialog.Dialog className="sm:max-w-[400px]">
             <AlertDialog.Header>
               <AlertDialog.Icon status="danger" />
               <AlertDialog.Heading>Delete this file?</AlertDialog.Heading>
