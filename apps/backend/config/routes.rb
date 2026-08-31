@@ -10,7 +10,11 @@ Rails.application.routes.draw do
       resource :registrations, only: :create
       resource :sessions, only: :create
       resource :current_user, only: :show, path: "me", controller: "current_user"
-      resources :meetings, only: [ :index, :show, :create ]
+      resources :meetings, only: [ :index, :show, :create ] do
+        resources :attachments, only: [ :index, :create, :destroy ] do
+          get :download, on: :member
+        end
+      end
     end
   end
 end

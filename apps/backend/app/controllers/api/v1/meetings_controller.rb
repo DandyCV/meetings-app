@@ -39,7 +39,8 @@ module Api
           id: meeting.id,
           title: meeting.title,
           description: meeting.description,
-          starts_at: meeting.starts_at&.iso8601
+          starts_at: meeting.starts_at&.iso8601,
+          attachments_count: meeting.meeting_attachments_count
         }
       end
     end
