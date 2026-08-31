@@ -121,6 +121,7 @@ export function MeetingAttachments({ meetingId }: { meetingId: number }) {
         <input
           id="attachment-input"
           type="file"
+          accept={ALLOWED_ATTACHMENT_TYPES.join(",")}
           disabled={isUploading}
           onChange={handleFile}
           className="text-sm"
@@ -133,16 +134,15 @@ export function MeetingAttachments({ meetingId }: { meetingId: number }) {
       </div>
 
       {error && (
-        <Alert status="danger">
+        <Alert status="danger" role="alert">
           <Alert.Indicator />
           <Alert.Content>
-            <Alert.Title>Upload problem</Alert.Title>
             <Alert.Description>{error}</Alert.Description>
           </Alert.Content>
         </Alert>
       )}
       {notice && (
-        <Alert status="success">
+        <Alert status="success" role="status">
           <Alert.Indicator />
           <Alert.Content>
             <Alert.Description>{notice}</Alert.Description>
@@ -159,7 +159,7 @@ export function MeetingAttachments({ meetingId }: { meetingId: number }) {
               <Alert.Description>{loadError}</Alert.Description>
             </Alert.Content>
           </Alert>
-          <Button size="sm" variant="secondary" onPress={() => void load()}>
+          <Button size="sm" variant="secondary" className="min-h-11" onPress={() => void load()}>
             Try again
           </Button>
         </div>
@@ -185,7 +185,7 @@ export function MeetingAttachments({ meetingId }: { meetingId: number }) {
             >
               <div className="min-w-0">
                 <p className="truncate font-medium">{attachment.filename}</p>
-                <p className="text-xs text-muted">
+                <p className="text-sm text-muted">
                   {formatFileSize(attachment.byte_size)} · {attachment.content_type} ·{" "}
                   {formatMeetingDate(attachment.created_at)}
                 </p>
@@ -201,7 +201,11 @@ export function MeetingAttachments({ meetingId }: { meetingId: number }) {
                 <Button
                   size="sm"
                   variant="secondary"
+                  className="min-h-11"
+                  aria-label={`Download ${attachment.filename}`}
                   onPress={() => {
+                    setError(null);
+                    setNotice(null);
                     void downloadAttachment(attachment, getToken()).catch(() =>
                       setError("Could not download that file. Please try again."),
                     );
@@ -209,7 +213,13 @@ export function MeetingAttachments({ meetingId }: { meetingId: number }) {
                 >
                   Download
                 </Button>
-                <Button size="sm" variant="danger" onPress={() => setPendingDelete(attachment)}>
+                <Button
+                  size="sm"
+                  variant="danger"
+                  className="min-h-11"
+                  aria-label={`Delete ${attachment.filename}`}
+                  onPress={() => setPendingDelete(attachment)}
+                >
                   Delete
                 </Button>
               </div>
