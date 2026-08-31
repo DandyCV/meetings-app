@@ -270,5 +270,12 @@ RSpec.describe "Api::V1::Meeting attachments", type: :request do
 
       expect { meeting.destroy }.to change(MeetingAttachment, :count).by(-2)
     end
+
+    it "enqueues a blob purge for each attachment when the meeting is destroyed" do
+      create_attachment(filename: "first.txt")
+      create_attachment(filename: "second.txt")
+
+      expect { meeting.destroy }.to have_enqueued_job(ActiveStorage::PurgeJob).twice
+    end
   end
 end
