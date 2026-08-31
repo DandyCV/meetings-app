@@ -24,6 +24,20 @@ RSpec.describe "Api::V1::Meetings", type: :request do
       expect(response.parsed_body.pluck("id")).to eq([ later.id, earlier.id ])
     end
 
+    it "returns an accurate attachments_count for each row" do
+      meeting = user.meetings.create!(title: "Standup", starts_at: 1.day.from_now)
+      3.times do |i|
+        a = meeting.meeting_attachments.build
+        a.file.attach(io: StringIO.new("x"), filename: "f#{i}.txt", content_type: "text/plain")
+        a.save!
+      end
+
+      get "/api/v1/meetings", headers: auth_headers
+
+      row = response.parsed_body.find { |m| m["id"] == meeting.id }
+      expect(row["attachments_count"]).to eq(3)
+    end
+
     it "returns an empty array when the user has no meetings" do
       get "/api/v1/meetings", headers: auth_headers
 
@@ -51,6 +65,19 @@ RSpec.describe "Api::V1::Meetings", type: :request do
         "title" => "Planning",
         "description" => "Q3 goals"
       )
+    end
+
+    it "includes an accurate attachments_count" do
+      meeting = user.meetings.create!(title: "Planning", starts_at: 2.days.from_now)
+      2.times do |i|
+        a = meeting.meeting_attachments.build
+        a.file.attach(io: StringIO.new("x"), filename: "f#{i}.txt", content_type: "text/plain")
+        a.save!
+      end
+
+      get "/api/v1/meetings/#{meeting.id}", headers: auth_headers
+
+      expect(response.parsed_body["attachments_count"]).to eq(2)
     end
 
     it "returns 404 for a meeting that belongs to another user" do
